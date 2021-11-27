@@ -1,0 +1,11 @@
+CREATE TABLE user (
+  id INT AUTO_INCREMENT NOT NULL,
+  firstname VARCHAR(255) NULL,
+  lastname VARCHAR(255) NULL,
+  email VARCHAR(255) NULL,
+  username VARCHAR(255) NULL,
+  password VARCHAR(255) NULL,
+  CONSTRAINT pk_user PRIMARY KEY (id)
+);
+
+
