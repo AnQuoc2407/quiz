@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ Previously we have seen Spring Boot Security - Password Encoding Using Bcrypt.
 Here using the Online Bcrypt Generator you can generate the Bcrypt for a password.
  */
 @Service
+@Component
 public class JwtUserDetailsService implements UserDetailsService {
 
     @Autowired

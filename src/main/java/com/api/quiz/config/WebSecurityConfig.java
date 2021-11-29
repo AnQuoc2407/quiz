@@ -1,6 +1,7 @@
 package com.api.quiz.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,6 +36,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // configure AuthenticationManager so that it knows from where to load
         // user for matching credentials
         // Use BCryptPasswordEncoder
+        auth.inMemoryAuthentication().passwordEncoder(passwordEncoder()).
+                withUser("kai").password("$2a$04$Q2Cq0k57zf2Vs/n3JXwzmerql9RzElr.J7aQd3/Sq0fw/BdDFPAj.").roles("ADMIN");
+        auth.inMemoryAuthentication().passwordEncoder(passwordEncoder()).
+                withUser("sena").password("$2a$04$Q2Cq0k57zf2Vs/n3JXwzmerql9RzElr.J7aQd3/Sq0fw/BdDFPAj.").roles("USER");
         auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
     }
 
@@ -50,11 +55,47 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // Chỉ cho phép user có quyền ADMIN truy cập đường dẫn /admin/**
+        http.authorizeRequests().antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')");
+
+        // Chỉ cho phép user có quyền ADMIN hoặc USER truy cập đường dẫn /user/**
+        http.authorizeRequests().antMatchers("/user/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')");
+        // Khi người dùng đã login, với vai trò USER, Nhưng truy cập vào trang yêu cầu vai trò ADMIN, sẽ chuyển hướng tới trang /403
+        // We don't need CSRF for this example
+        http.csrf().disable()
+                // dont authenticate this particular request
+                .authorizeRequests().antMatchers("/login", "/register").permitAll().
+                // all other requests need to be authenticated
+                        anyRequest().authenticated().and().
+                // make sure we use stateless session; session won't be used to
+                // store user's state.
+                        exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        // Add a filter to validate the tokens with every request
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // Cấu hình cho Login Form.
+     //   http.authorizeRequests().and().formLogin()//
+       //         .loginProcessingUrl("/j_spring_security_login")//
+       //         .loginPage("/login")//
+       //         .defaultSuccessUrl("/user")//
+       //         .failureUrl("/login?message=error")//
+       //         .usernameParameter("username")//
+       //         .passwordParameter("password")
+                // Cấu hình cho Logout Page.
+       //         .and().logout().logoutUrl("/j_spring_security_logout").logoutSuccessUrl("/login?message=logout");
+    }
+
+    /*
+    @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
+
         // We don't need CSRF for this example
         httpSecurity.csrf().disable()
                 // dont authenticate this particular request
-                .authorizeRequests().antMatchers("/login", "/register","/h2-console").permitAll().
+                .authorizeRequests().antMatchers("/login", "/register").permitAll().
                 // all other requests need to be authenticated
                         anyRequest().authenticated().and().
                 // make sure we use stateless session; session won't be used to
@@ -66,11 +107,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
 
+
     }
+
+     */
     @Override
     public void configure(WebSecurity web) throws Exception {
         web
                 .ignoring()
                 .antMatchers("/h2-console/**", "swagger-ui.html");
     }
+
+
 }
