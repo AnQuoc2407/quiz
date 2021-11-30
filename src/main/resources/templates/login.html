@@ -6,7 +6,7 @@
 <body>
 	<h2>Spring Boot Security Login with Google+</h2>
 	<a href="https://accounts.google.com/o/oauth2/auth?scope=email&redirect_uri=http://localhost:8080/login-google&response_type=code
-		&client_id=80724656105-fg2ndheoujm7c7dd4ob1i9mq3ebdbjhb.apps.googleusercontent.com&approval_prompt=force">Login With Gmail</a>	
+		&client_id=57544313133-e06qfnvcftl5s7l8f847scc5dns72ga2.apps.googleusercontent.com&approval_prompt=force">Login With Gmail</a>
 	
 	<br/>
 	<form name='login-form' th:action="@{/j_spring_security_login}" method='POST'>
@@ -24,6 +24,7 @@
 			</tr>
 		</table>
 		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+
 	</form>
 </body>
 </html>

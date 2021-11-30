@@ -12,16 +12,10 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
 public class HelloController {
-
-
     @RequestMapping({ "/hello" })
     public String firstPage() {
         return "Hello World";
     }
-
-
-
 
 }

@@ -1,3 +1,4 @@
+
 CREATE TABLE user (
   id INT AUTO_INCREMENT NOT NULL,
   firstname VARCHAR(255) NULL,

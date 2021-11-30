@@ -42,7 +42,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 withUser("sena").password("$2a$04$Q2Cq0k57zf2Vs/n3JXwzmerql9RzElr.J7aQd3/Sq0fw/BdDFPAj.").roles("USER");
         auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
     }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -56,6 +55,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        // Add a filter to validate the tokens with every request
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         // Chỉ cho phép user có quyền ADMIN truy cập đường dẫn /admin/**
         http.authorizeRequests().antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')");
 
@@ -65,17 +66,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // We don't need CSRF for this example
         http.csrf().disable()
                 // dont authenticate this particular request
-                .authorizeRequests().antMatchers("/login", "/register").permitAll().
+                .authorizeRequests().antMatchers("/login/**", "/register/**").permitAll().
                 // all other requests need to be authenticated
                         anyRequest().authenticated().and().
                 // make sure we use stateless session; session won't be used to
                 // store user's state.
                         exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-        // Add a filter to validate the tokens with every request
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
         // Cấu hình cho Login Form.
      //   http.authorizeRequests().and().formLogin()//
        //         .loginProcessingUrl("/j_spring_security_login")//
@@ -84,8 +81,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
        //         .failureUrl("/login?message=error")//
        //         .usernameParameter("username")//
        //         .passwordParameter("password")
-                // Cấu hình cho Logout Page.
-       //         .and().logout().logoutUrl("/j_spring_security_logout").logoutSuccessUrl("/login?message=logout");
+               // Cấu hình cho Logout Page.
+            //  .and().logout().logoutUrl("/j_spring_security_logout").logoutSuccessUrl("/login?message=logout");
     }
 
     /*
@@ -105,9 +102,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // Add a filter to validate the tokens with every request
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
-
-
     }
 
      */
@@ -115,7 +109,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web
                 .ignoring()
-                .antMatchers("/h2-console/**", "swagger-ui.html");
+                .antMatchers("/h2-console/**", "/swagger-ui.html");
     }
 
 
