@@ -37,6 +37,7 @@ public class BaseController {
                 userDetail.getAuthorities());
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        System.out.println(accessToken);
         return "redirect:/hello";
     }
 
