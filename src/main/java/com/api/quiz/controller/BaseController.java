@@ -31,7 +31,6 @@ public class BaseController {
         }
 
         String accessToken = googleUtils.getToken(code);
-
         GooglePojo googlePojo = googleUtils.getUserInfo(accessToken);
         UserDetails userDetail = googleUtils.buildUser(googlePojo);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail, null,
